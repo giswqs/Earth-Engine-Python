@@ -6,6 +6,12 @@ ee.Initialize()
 fromFT = ee.FeatureCollection('ft:1CLldB-ULPyULBT2mxoRNv7enckVF0gCQoD2oH7XP')
 # print(fromFT.getInfo())
 
+polys = fromFT.geometry()
+
+centroid = polys.centroid()
+print(centroid.getInfo())
+lng, lat = centroid.getInfo()['coordinates']
+print("lng = {}, lat = {}".format(lng, lat))
 
 collection = ee.ImageCollection('LANDSAT/LC8_L1T_TOA')
 
@@ -16,10 +22,10 @@ print(images.size().getInfo())
 
 median = images.median()
 
-lat = 46.80514
-lng = -99.22023
+# lat = 46.80514
+# lng = -99.22023
 lng_lat = ee.Geometry.Point(lng, lat)
-ee.mapclient.centerMap(lng, lat, 12)
+ee.mapclient.centerMap(lng, lat, 10)
 vis = {'bands': ['B5', 'B4', 'B3'], 'max': 0.3}
 ee.mapclient.addToMap(median,vis)
 ee.mapclient.addToMap(fromFT)
