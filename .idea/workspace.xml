@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c99828de-374d-48c9-af97-f2e04e68fbeb" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/AssetManagement/exporting_data.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/NAIP/ndwi_single.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -591,7 +589,14 @@
       <option name="project" value="LOCAL" />
       <updated>1488169175706</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="add export image function">
+      <created>1488254888142</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1488254888142</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -648,7 +653,8 @@
     <MESSAGE value="Add section How Earth Engine Works" />
     <MESSAGE value="Add Pipestem fusion table" />
     <MESSAGE value="add naip ndwi function" />
-    <option name="LAST_COMMIT_MESSAGE" value="add naip ndwi function" />
+    <MESSAGE value="add export image function" />
+    <option name="LAST_COMMIT_MESSAGE" value="add export image function" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
