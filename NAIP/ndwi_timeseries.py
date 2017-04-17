@@ -3,31 +3,10 @@ import ee.mapclient
 
 ee.Initialize()
 
-year = 2015
-collection = ee.ImageCollection('USDA/NAIP/DOQQ')
-startTime = ee.Date(str(year) + '-01-01')
-endTime = ee.Date(str(year) + '-12-31')
-# year = startTime.get('year').getInfo()
-# print(year)
-
-fromFT = ee.FeatureCollection('ft:1CLldB-ULPyULBT2mxoRNv7enckVF0gCQoD2oH7XP')
-# count = fromFT.size().getInfo()
-# print(count)
-polys = fromFT.geometry()
-centroid = polys.centroid()
-lng, lat = centroid.getInfo()['coordinates']
-# print("lng = {}, lat = {}".format(lng, lat))
-
-
-values = fromFT.reduceColumns(ee.Reducer.toList(2), ['system:index', 'name']).getInfo()['list']
-# print(values)
-ee.mapclient.centerMap(lng, lat, 10)
-
 
 def subsetNAIP(img_col, startTime, endTime, fc):
     img = img_col.filterDate(startTime, endTime).filterBounds(fc).mosaic().clip(fc)
     return img
-
 
 def calNDWI(image):
     """A function to compute NDWI."""
@@ -41,11 +20,9 @@ def calNDWI(image):
     opened = large_patches.focal_min(1).focal_max(1)
     return opened
 
-
 def rasterToVector(img, fc):
     vec = img.reduceToVectors(geometry=fc, eightConnected=True, maxPixels=59568116121, crs=img.projection(), scale=1)
     return vec
-
 
 def exportToDrive(vec, filename):
     taskParams = {
@@ -56,17 +33,40 @@ def exportToDrive(vec, filename):
     task.start()
 
 
+# years = [2003, 2004, 2005, 2006, 2009, 2010, 2014]
+years = [2003, 2004, 2005, 2006, 2009, 2010, 2012, 2014, 2015]
+
+collection = ee.ImageCollection('USDA/NAIP/DOQQ')
+fromFT = ee.FeatureCollection('ft:1CLldB-ULPyULBT2mxoRNv7enckVF0gCQoD2oH7XP')
+# count = fromFT.size().getInfo()
+# print(count)
+polys = fromFT.geometry()
+centroid = polys.centroid()
+lng, lat = centroid.getInfo()['coordinates']
+# print("lng = {}, lat = {}".format(lng, lat))
+values = fromFT.reduceColumns(ee.Reducer.toList(2), ['system:index', 'name']).getInfo()['list']
+# print(values)
+# ee.mapclient.centerMap(lng, lat, 10)
 vis = {'bands': ['N', 'R', 'G']}
-for (id, name) in values:
-    watershed = fromFT.filter(ee.Filter.eq('system:index', str(id)))
-    filename = "Y" + str(year) + "_" + str(id) + "_" + str(name).replace(" ", "_")
-    print(filename)
-    image = subsetNAIP(collection, startTime, endTime, watershed)
-    ndwi = calNDWI(image)
-    vector = rasterToVector(ndwi, watershed)
-    exportToDrive(vector, filename)
-    # ee.mapclient.addToMap(image, vis)
-    # ee.mapclient.addToMap(vector)
+
+for year in years:
+    # year = 2015
+
+    startTime = ee.Date(str(year) + '-01-01')
+    endTime = ee.Date(str(year) + '-12-31')
+    # year = startTime.get('year').getInfo()
+    # print(year)
+
+    for (id, name) in values:
+        watershed = fromFT.filter(ee.Filter.eq('system:index', str(id)))
+        filename = "Y" + str(year) + "_" + str(id) + "_" + str(name).replace(" ", "_")
+        print(filename)
+        image = subsetNAIP(collection, startTime, endTime, watershed)
+        ndwi = calNDWI(image)
+        vector = rasterToVector(ndwi, watershed)
+        exportToDrive(vector, filename)
+        # ee.mapclient.addToMap(image, vis)
+        # ee.mapclient.addToMap(vector)
 
 
 
