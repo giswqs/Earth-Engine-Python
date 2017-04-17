@@ -3,10 +3,11 @@ import ee.mapclient
 
 ee.Initialize()
 
+year = 2014
 collection = ee.ImageCollection('USDA/NAIP/DOQQ')
-startTime = ee.Date('2015-01-01')
-endTime = ee.Date('2015-12-31')
-year = startTime.get('year').getInfo()
+startTime = ee.Date(str(year) + '-01-01')
+endTime = ee.Date(str(year) + '-12-31')
+# year = startTime.get('year').getInfo()
 # print(year)
 
 fromFT = ee.FeatureCollection('ft:1CLldB-ULPyULBT2mxoRNv7enckVF0gCQoD2oH7XP')
@@ -21,6 +22,7 @@ lng, lat = centroid.getInfo()['coordinates']
 values = fromFT.reduceColumns(ee.Reducer.toList(2), ['system:index', 'name']).getInfo()['list']
 # print(values)
 ee.mapclient.centerMap(lng, lat, 10)
+
 
 def subsetNAIP(img_col, startTime, endTime, fc):
     img = img_col.filterDate(startTime, endTime).filterBounds(fc).mosaic().clip(fc)
@@ -52,6 +54,7 @@ def exportToDrive(vec, filename):
     }
     task = ee.batch.Export.table(vec, filename, taskParams)
     task.start()
+
 
 vis = {'bands': ['N', 'R', 'G']}
 for (id, name) in values:
