@@ -8,11 +8,11 @@ def subsetNAIP(img_col, startTime, endTime, fc):
     img = img_col.filterDate(startTime, endTime).filterBounds(fc).mosaic().clip(fc)
     return img
 
-def calNDWI(image):
+def calNDWI(image, threshold):
     """A function to compute NDWI."""
     ndwi = image.normalizedDifference(['G', 'N'])
     ndwiViz = {'min': 0, 'max': 1, 'palette': ['00FFFF', '0000FF']}
-    ndwiMasked = ndwi.updateMask(ndwi.gte(0.2))
+    ndwiMasked = ndwi.updateMask(ndwi.gte(threshold))
     ndwi_bin = ndwiMasked.gt(0)
     patch_size = ndwi_bin.connectedPixelCount(500, True)
     large_patches = patch_size.eq(500)
@@ -33,8 +33,9 @@ def exportToDrive(vec, filename):
     task.start()
 
 
-# years = [2003, 2004, 2005, 2006, 2009, 2010, 2014]
-years = [2003, 2004, 2005, 2006, 2009, 2010, 2012, 2014, 2015]
+years = [2014]
+threshold = 0.3
+# years = [2003, 2004, 2005, 2006, 2009, 2010, 2012, 2014, 2015]
 
 collection = ee.ImageCollection('USDA/NAIP/DOQQ')
 fromFT = ee.FeatureCollection('ft:1CLldB-ULPyULBT2mxoRNv7enckVF0gCQoD2oH7XP')
@@ -62,13 +63,11 @@ for year in years:
         filename = "Y" + str(year) + "_" + str(id) + "_" + str(name).replace(" ", "_")
         print(filename)
         image = subsetNAIP(collection, startTime, endTime, watershed)
-        ndwi = calNDWI(image)
+        ndwi = calNDWI(image, threshold)
         vector = rasterToVector(ndwi, watershed)
         exportToDrive(vector, filename)
         # ee.mapclient.addToMap(image, vis)
         # ee.mapclient.addToMap(vector)
-
-
 
 
 # for i in range(2, 2 + count):
